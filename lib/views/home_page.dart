@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert' as convert;
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -8,15 +11,82 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+
+  late List tasks = [];
+  late var tasks_data;
+
+  callData() async {
+    print("Working");
+    tasks_data = await fetchData('http://192.168.1.6:8000/api/tasks');
+
+    setState(() {
+      tasks = tasks_data;
+    });
+  }
+
+  Future <dynamic> fetchData(String link) async {
+
+    var url = Uri.parse(link);
+
+    var response = await http.get(url);
+
+    if (response.statusCode == 200) {
+      var jsonResponse = convert.jsonDecode(response.body);
+      return jsonResponse;
+    }
+    else {
+      throw Exception('Request failed with status: ${response.statusCode}.');
+    }
+  }
+
+  deleteTask(value){
+    setState(() {
+      tasks.remove(value);
+    });
+  }
+
+  void initState(){
+    callData();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Welcome!"),
+        title: const Text("Tasks"),
       ),
-      body: const Center(
-        child: Text("Hello world!"),
-      ),
+      body: ListView.builder(
+        itemCount: tasks.length,
+        itemBuilder: (context, index){
+          final task = tasks[index];
+
+          return Slidable(
+            key: UniqueKey(),
+            endActionPane: const ActionPane(
+              motion: const StretchMotion(),
+              children: [
+                SlidableAction(
+                  icon: Icons.delete,
+                    backgroundColor: Colors.red,
+                    foregroundColor: Colors.white,
+                    onPressed: null//deleteTask(),
+                    ),
+                SlidableAction(
+                  icon: Icons.share,
+                    backgroundColor: Colors.blue,
+                    foregroundColor: Colors.white,
+                    onPressed: null)
+              ],
+            ),
+              child: Card(
+                child: ListTile(
+                    title: Text(task['name'])
+                ),
+              ));
+        },
+      )
     );
   }
+
 }

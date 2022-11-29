@@ -8,7 +8,6 @@ import 'package:todo_app/views/widgets/progress_dialog.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 
-
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
 
@@ -31,9 +30,9 @@ class _LoginPageState extends State<LoginPage> {
 
     Map body = {
       "email": emailController.text,
+
       "password": passwordController.text
     };
-
     print(body);
 
     var apiUrl = "${dotenv.env['API_URL']}/login";
