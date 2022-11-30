@@ -21,6 +21,8 @@ class _LoginPageState extends State<LoginPage> {
 
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
+  var user_id;
+
 
   login(context) async {
 
@@ -34,6 +36,19 @@ class _LoginPageState extends State<LoginPage> {
       "password": passwordController.text
     };
     print(body);
+
+    String email = emailController.text;
+    //fetch user_id
+    var url = Uri.parse('http://192.168.1.6:8000/api/user/$email');
+    print('http://192.168.1.6:8000/api/user/$email');
+    var fetchResponse = await http.get(url);
+    
+    if (fetchResponse.statusCode == 200) {
+      var jsonResponse = jsonDecode(fetchResponse.body);
+      user_id = (jsonResponse[0]['id']);
+    }
+
+
 
     var apiUrl = "${dotenv.env['API_URL']}/login";
 
@@ -79,7 +94,7 @@ class _LoginPageState extends State<LoginPage> {
 
     Navigator.pushAndRemoveUntil(
         context,
-        MaterialPageRoute(builder: (context) => HomePage()),
+        MaterialPageRoute(builder: (context) => HomePage(user_id : user_id)),
             (route) => false
     );
 

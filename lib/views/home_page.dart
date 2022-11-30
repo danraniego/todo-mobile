@@ -4,7 +4,10 @@ import 'package:http/http.dart' as http;
 import 'dart:convert' as convert;
 
 class HomePage extends StatefulWidget {
-  const HomePage({Key? key}) : super(key: key);
+
+  final user_id;
+
+  const HomePage({required this.user_id, Key? key}) : super(key: key);
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -15,9 +18,15 @@ class _HomePageState extends State<HomePage> {
   late List tasks = [];
   late var tasks_data;
 
+  var userID;
+
   callData() async {
-    print("Working");
-    tasks_data = await fetchData('http://192.168.1.6:8000/api/tasks');
+    print("Working ${widget.user_id}");
+    userID = (widget.user_id).toString();
+
+    print(userID.runtimeType);
+
+    tasks_data = await fetchData('http://192.168.1.6:8000/api/tasks/$userID');
 
     setState(() {
       tasks = tasks_data;
