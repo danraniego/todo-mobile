@@ -3,6 +3,8 @@ import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert' as convert;
 
+import 'package:todo_app/model/task.dart';
+
 class HomePage extends StatefulWidget {
 
   final user_id;
@@ -28,9 +30,12 @@ class _HomePageState extends State<HomePage> {
 
     tasks_data = await fetchData('http://192.168.1.6:8000/api/tasks/$userID');
 
-    setState(() {
-      tasks = tasks_data;
-    });
+    for(int i = 0; i < tasks_data.length; i++) {
+      setState(() {
+        tasks.add(Task.fromJson(tasks_data[i]));
+      });
+
+    }
   }
 
   Future <dynamic> fetchData(String link) async {
@@ -41,6 +46,10 @@ class _HomePageState extends State<HomePage> {
 
     if (response.statusCode == 200) {
       var jsonResponse = convert.jsonDecode(response.body);
+
+      //Json to Object
+
+
       return jsonResponse;
     }
     else {
@@ -48,9 +57,9 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
-  deleteTask(value){
+  void removeData(int index){
     setState(() {
-      tasks.remove(value);
+      tasks.removeAt(index);
     });
   }
 
@@ -61,41 +70,60 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text("Tasks"),
-      ),
-      body: ListView.builder(
-        itemCount: tasks.length,
-        itemBuilder: (context, index){
-          final task = tasks[index];
 
-          return Slidable(
-            key: UniqueKey(),
-            endActionPane: const ActionPane(
-              motion: const StretchMotion(),
-              children: [
-                SlidableAction(
-                  icon: Icons.delete,
-                    backgroundColor: Colors.red,
-                    foregroundColor: Colors.white,
-                    onPressed: null//deleteTask(),
+    return Scaffold(
+        appBar: AppBar(
+          title: const Text("Tasks"),
+        ),
+        body:  SlidableAutoCloseBehavior(
+          closeWhenOpened: true,
+          child: ListView.builder(
+            itemCount: tasks.length,
+            itemBuilder: (context, index){
+              final task = tasks[index];
+
+              return Slidable(
+                  key: UniqueKey(),
+                  endActionPane: ActionPane(
+                    extentRatio: 1 / 1.5,
+
+                    motion: const StretchMotion(),
+                    children: [
+                      SlidableAction(
+                          icon: Icons.delete,
+                          backgroundColor: Colors.red,
+                          foregroundColor: Colors.white,
+                          label: "Delete",
+                          onPressed: (context) => removeData(index)
+                      ),
+                      SlidableAction(
+                          icon: Icons.edit_note,
+                          backgroundColor: Colors.blue,
+                          foregroundColor: Colors.white,
+                          label: "Edit",
+                          onPressed: null),
+                      SlidableAction(
+                          icon: Icons.share,
+                          backgroundColor: Colors.green,
+                          foregroundColor: Colors.white,
+                          label: "Share",
+                          onPressed: null),
+                    ],
+                  ),
+                  child: Card(
+                    child: ListTile(
+                      leading: Icon(Icons.task_sharp),
+                      title: Text(task.name),
+                      subtitle: Text(task.createdAt),
+
                     ),
-                SlidableAction(
-                  icon: Icons.share,
-                    backgroundColor: Colors.blue,
-                    foregroundColor: Colors.white,
-                    onPressed: null)
-              ],
-            ),
-              child: Card(
-                child: ListTile(
-                    title: Text(task['name'])
-                ),
-              ));
-        },
-      )
+                  ));
+            },
+          ),
+        )
     );
   }
 
 }
+
+

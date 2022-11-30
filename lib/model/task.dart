@@ -14,4 +14,14 @@ class Task{
     this.updatedAt
 });
 
+  factory Task.fromJson(Map<String, dynamic> json) {
+    return Task(
+        id: json['id'],
+        name: json['name'],
+        details: json['details'],
+        createdAt: json['created_at'],
+        updatedAt: json['updated_at']
+    );
+  }
+
 }
