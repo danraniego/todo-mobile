@@ -4,6 +4,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert' as convert;
 
 import 'package:todo_app/model/task.dart';
+import 'package:todo_app/views/task_details.dart';
 
 class HomePage extends StatefulWidget {
 
@@ -23,10 +24,7 @@ class _HomePageState extends State<HomePage> {
   var userID;
 
   callData() async {
-    print("Working ${widget.user_id}");
     userID = (widget.user_id).toString();
-
-    print(userID.runtimeType);
 
     tasks_data = await fetchData('http://192.168.1.6:8000/api/tasks/$userID');
 
@@ -63,6 +61,7 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
+  @override
   void initState(){
     callData();
     super.initState();
@@ -115,7 +114,12 @@ class _HomePageState extends State<HomePage> {
                       leading: Icon(Icons.task_sharp),
                       title: Text(task.name),
                       subtitle: Text(task.createdAt),
-
+                      onTap: () {
+                        Navigator.push(context,
+                        MaterialPageRoute(
+                          builder: (context) => TaskDetails(task: task)
+                        ));
+                      },
                     ),
                   ));
             },
