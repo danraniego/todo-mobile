@@ -1,28 +1,32 @@
 import 'package:flutter/material.dart';
 import 'package:todo_app/model/task.dart';
+import 'package:intl/intl.dart';
 
 class TaskDetails extends StatelessWidget {
 
   final Task task;
 
-  const TaskDetails({required this.task, super.key});
+  TaskDetails({required this.task, super.key});
+
+  late DateTime taskDate = DateTime.parse(task.updatedAt!);
+  
+  late String date = DateFormat('h:mm a MMMM d, yyyy').format(taskDate);
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       appBar: AppBar(
-        title: Text("Task Details"),
+        title: const Text("Task Details"),
       ),
       body: Container(
-        padding: EdgeInsets.all(5),
+        padding: const EdgeInsets.all(5),
         child: Column(
           children: [
             Padding(
                 padding: const EdgeInsets.only(top: 10, left: 10, bottom: 10),
                 child: Row(
                   children: [
-                    Text(task.updatedAt!,
+                    Text(date,
                     style: TextStyle(
                       fontSize: 12,
                       color: Colors.black.withOpacity(0.4)
@@ -42,7 +46,7 @@ class TaskDetails extends StatelessWidget {
                   ],
                 )
             ),
-            Divider(thickness: 1),
+            const Divider(thickness: 1),
             Padding(
               padding: const EdgeInsets.all(10.0),
               child: Row(
