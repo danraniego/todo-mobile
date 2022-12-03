@@ -45,10 +45,16 @@ class TaskDetails extends StatelessWidget {
             Divider(thickness: 1),
             Padding(
               padding: const EdgeInsets.all(10.0),
-              child: Text(task.details!,
-              style: const TextStyle(
-                height: 1.5,
-              )),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Text(task.details!,
+                      style: const TextStyle(
+                        height: 1.5,
+                      )),
+                  )
+                ],
+              )
             ),
           ],
         ),
